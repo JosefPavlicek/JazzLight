@@ -45,28 +45,42 @@ export function ConcertsSection({ concerts, lang, t }: { concerts: Concert[]; la
         <h2 className="section-heading">{t.concertsTitle}</h2>
         <p className="section-text">{t.concertsText}</p>
 
-        <div className="columns">
-          <div>
-            <h3 className="column-title">{t.upcomingConcerts}</h3>
-            <div className="concert-list">
-              {upcoming.length ? upcoming.map((concert) => (
-                <ConcertItem key={concert.id} concert={concert} lang={lang} t={t} />
-              )) : (
-                <article className="concert-card"><p className="concert-meta">{t.noUpcomingConcerts}</p></article>
-              )}
-            </div>
+        <div className="concert-block">
+          <h3 className="column-title">{t.upcomingConcerts}</h3>
+          <div className="concert-list upcoming-list">
+            {upcoming.length ? upcoming.map((concert) => (
+              <ConcertItem key={concert.id} concert={concert} lang={lang} t={t} />
+            )) : (
+              <article className="concert-card">
+                <p className="concert-meta">{t.noUpcomingConcerts}</p>
+              </article>
+            )}
+          </div>
+        </div>
+
+        <div className="concert-block">
+          <div className="concert-heading-row">
+            <h3 className="column-title">{t.pastConcerts}</h3>
+            {past.length > 1 ? (
+              <p className="section-text concert-scroll-hint">
+                {lang === "cs" ? "Posuňte do strany →" : "Scroll sideways →"}
+              </p>
+            ) : null}
           </div>
 
-          <div>
-            <h3 className="column-title">{t.pastConcerts}</h3>
-            <div className="concert-list">
-              {past.length ? past.map((concert) => (
-                <ConcertItem key={concert.id} concert={concert} lang={lang} t={t} />
-              )) : (
-                <article className="concert-card"><p className="concert-meta">{t.noPastConcerts}</p></article>
-              )}
+          {past.length ? (
+            <div className="past-concert-carousel" aria-label={t.pastConcerts}>
+              {past.map((concert) => (
+                <div className="past-concert-slide" key={concert.id}>
+                  <ConcertItem concert={concert} lang={lang} t={t} />
+                </div>
+              ))}
             </div>
-          </div>
+          ) : (
+            <article className="concert-card">
+              <p className="concert-meta">{t.noPastConcerts}</p>
+            </article>
+          )}
         </div>
       </div>
     </section>

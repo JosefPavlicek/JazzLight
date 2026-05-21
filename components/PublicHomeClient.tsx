@@ -13,17 +13,33 @@ import { ConcertsSection } from "@/components/ConcertsSection";
 import { ContactSection } from "@/components/ContactSection";
 import { Footer } from "@/components/Footer";
 
+type Props = {
+  content: SiteContent;
+  concerts: Concert[];
+};
+
 function getInitialLang(): Lang {
   if (typeof window === "undefined") return "cs";
+
   const stored = window.localStorage.getItem("jazzlight-lang");
   if (stored === "en" || stored === "cs") return stored;
-  return window.navigator.language.toLowerCase().startsWith("en") ? "en" : "cs";
+
+  const browserLang = window.navigator.language.toLowerCase();
+  return browserLang.startsWith("en") ? "en" : "cs";
 }
 
-export function PublicHomeClient({ content, concerts }: { content: SiteContent; concerts: Concert[] }) {
+export function PublicHomeClient({ content, concerts }: Props) {
   const [lang, setLang] = useState<Lang>("cs");
-  const t = dictionary[lang];
-  useEffect(() => setLang(getInitialLang()), []);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    setLang(getInitialLang());
+  }, []);
+
+  const safeLang: Lang = mounted ? lang : "cs";
+  const t = dictionary[safeLang];
+
   function toggleLang() {
     setLang((current) => {
       const next = current === "cs" ? "en" : "cs";
@@ -31,16 +47,17 @@ export function PublicHomeClient({ content, concerts }: { content: SiteContent; 
       return next;
     });
   }
+
   return (
     <div className="site-shell">
-      <Header lang={lang} t={t} onToggleLang={toggleLang} />
+      <Header lang={safeLang} t={t} onToggleLang={toggleLang} />
       <main>
-        <Hero t={t} contact={content.contact} lang={lang} />
-        <AboutSection title={t.aboutTitle} html={content.about[lang]} />
-        <ArtistsSection title={t.membersTitle} text={t.membersText} artists={content.artists} lang={lang} />
-        <RepertoireSection title={t.repertoireTitle} html={content.repertoire[lang]} />
-        <ConcertsSection concerts={concerts} lang={lang} t={t} />
-        <ContactSection t={t} contact={content.contact} lang={lang} />
+        <Hero t={t} contact={content.contact} lang={safeLang} />
+        <AboutSection title={t.aboutTitle} html={content.about[safeLang]} />
+        <ArtistsSection title={t.membersTitle} text={t.membersText} artists={content.artists} lang={safeLang} />
+        <RepertoireSection title={t.repertoireTitle} html={content.repertoire[safeLang]} />
+        <ConcertsSection concerts={concerts} lang={safeLang} t={t} />
+        <ContactSection t={t} contact={content.contact} lang={safeLang} />
       </main>
       <Footer t={t} />
     </div>
