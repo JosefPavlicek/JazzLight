@@ -1,19 +1,31 @@
-export function Header() {
+import type { Dictionary, Lang } from "@/lib/i18n";
+
+type HeaderProps = {
+  lang: Lang;
+  t: Dictionary;
+  onToggleLang: () => void;
+};
+
+export function Header({ lang, t, onToggleLang }: HeaderProps) {
   return (
     <header className="site-header">
       <div className="container header-inner">
         <a href="#top" className="brand">
           <span className="brand-title">JazzLight</span>
-          <span className="brand-subtitle">komorní hudba pro vaše akce</span>
+          <span className="brand-subtitle">{t.brandSubtitle}</span>
         </a>
+
         <nav className="nav-links">
-          <a href="#about">O kapele</a>
-          <a href="#members">Členové</a>
-          <a href="#repertoire">Co hrajeme</a>
-          <a href="#concerts">Koncerty</a>
-          <a href="#contact">Kontakt</a>
+          <a href="#about">{t.navAbout}</a>
+          <a href="#members">{t.navMembers}</a>
+          <a href="#repertoire">{t.navRepertoire}</a>
+          <a href="#concerts">{t.navConcerts}</a>
+          <a href="#contact">{t.navContact}</a>
         </nav>
-        <div className="lang-badge">CZ / EN</div>
+
+        <button className="lang-badge lang-button" type="button" onClick={onToggleLang}>
+          {t.langSwitchLabel}
+        </button>
       </div>
     </header>
   );

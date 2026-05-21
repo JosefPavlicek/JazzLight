@@ -6,3 +6,6 @@ node_modules
 .env.local
 .env
 .env.production
+.env*.local
+firebase-base64.txt
+jazz-light-firebase.json

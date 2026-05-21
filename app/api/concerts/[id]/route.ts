@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createConcert, listConcerts } from "@/lib/concertService";
+import { deleteConcert, updateConcert } from "@/lib/concertService";
 import { isAdminRequest } from "@/lib/adminAuth";
 import type { ConcertImage } from "@/types/concert";
 
-export const dynamic = "force-dynamic";
 const MAX_IMAGE_BYTES = 700_000;
-
 function clean(value: unknown) { return typeof value === "string" ? value.trim() : ""; }
 
 function validateImages(images: unknown): ConcertImage[] {
@@ -28,18 +26,23 @@ function buildConcertInput(body: any) {
   return { date, title, venue, description: clean(body.description), link: clean(body.link), published: Boolean(body.published), images: validateImages(body.images) };
 }
 
-export async function GET(request: NextRequest) {
-  const concerts = await listConcerts();
-  const all = request.nextUrl.searchParams.get("all") === "1";
-  return NextResponse.json({ concerts: concerts.filter((c) => all || c.published).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()) });
-}
-
-export async function POST(request: NextRequest) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   if (!isAdminRequest(request)) return NextResponse.json({ error: "Nepřihlášený administrátor." }, { status: 401 });
   try {
     const body = await request.json();
-    const concert = await createConcert(buildConcertInput(body));
-    return NextResponse.json({ concert }, { status: 201 });
+    const concert = await updateConcert(params.id, buildConcertInput(body));
+    return NextResponse.json({ concert });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Neznámá chyba.";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+  if (!isAdminRequest(request)) return NextResponse.json({ error: "Nepřihlášený administrátor." }, { status: 401 });
+  try {
+    await deleteConcert(params.id);
+    return NextResponse.json({ ok: true });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Neznámá chyba.";
     return NextResponse.json({ error: message }, { status: 500 });
