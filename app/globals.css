@@ -628,3 +628,86 @@ img {
   max-height: 360px;
   object-fit: cover;
 }
+
+/* Image lightbox + concert gallery */
+.image-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 1.2rem;
+  background: rgba(30, 24, 20, 0.82);
+  backdrop-filter: blur(4px);
+}
+
+.image-lightbox-img {
+  max-width: min(96vw, 1400px);
+  max-height: 92vh;
+  object-fit: contain;
+  border-radius: 18px;
+  background: white;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+}
+
+.image-lightbox-close {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 999px;
+  background: white;
+  color: var(--text);
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+
+.concert-poster-button,
+.member-photo-button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: zoom-in;
+}
+
+.member-photo-button {
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.concert-gallery {
+  margin-bottom: 0.85rem;
+}
+
+.concert-gallery .concert-poster {
+  margin-bottom: 0;
+}
+
+.concert-gallery-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 0.55rem;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.concert-gallery-controls button {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fffdf8;
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 1.35rem;
+  line-height: 1;
+}
