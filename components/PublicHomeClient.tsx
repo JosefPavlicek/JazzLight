@@ -20,12 +20,9 @@ type Props = {
 
 function getInitialLang(): Lang {
   if (typeof window === "undefined") return "cs";
-
   const stored = window.localStorage.getItem("jazzlight-lang");
   if (stored === "en" || stored === "cs") return stored;
-
-  const browserLang = window.navigator.language.toLowerCase();
-  return browserLang.startsWith("en") ? "en" : "cs";
+  return window.navigator.language.toLowerCase().startsWith("en") ? "en" : "cs";
 }
 
 export function PublicHomeClient({ content, concerts }: Props) {
@@ -37,11 +34,6 @@ export function PublicHomeClient({ content, concerts }: Props) {
     setMounted(true);
   }, []);
 
-  /*
-    Server render a první klientský render musí být identické.
-    Proto do mountu vykreslíme jen stabilní shell bez dynamického jazyka,
-    WYSIWYG HTML a carouselů. Skutečný web se vykreslí až po mountu klienta.
-  */
   if (!mounted) {
     return (
       <div className="site-shell">
@@ -71,7 +63,7 @@ export function PublicHomeClient({ content, concerts }: Props) {
     <div className="site-shell">
       <Header lang={lang} t={t} onToggleLang={toggleLang} />
       <main>
-        <Hero t={t} contact={content.contact} lang={lang} />
+        <Hero t={t} contact={content.contact} lang={lang} heroImage={content.heroImage} />
         <AboutSection title={t.aboutTitle} html={content.about[lang]} />
         <ArtistsSection title={t.membersTitle} text={t.membersText} artists={content.artists} lang={lang} />
         <RepertoireSection title={t.repertoireTitle} html={content.repertoire[lang]} />

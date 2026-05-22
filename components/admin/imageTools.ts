@@ -1,7 +1,89 @@
-export type PreparedImage = { id: string; name: string; mimeType: string; sizeBytes: number; base64: string };
+export type PreparedImage = {
+  id: string;
+  name: string;
+  mimeType: string;
+  sizeBytes: number;
+  base64: string;
+};
+
 const TARGET_IMAGE_BYTES = 550_000;
 const MAX_WIDTH = 1400;
 const MAX_HEIGHT = 1400;
-function dataUrlSizeBytes(dataUrl: string) { const base64 = dataUrl.split(",")[1] || ""; return Math.round((base64.length * 3) / 4); }
-function loadImage(file: File): Promise<HTMLImageElement> { return new Promise((resolve, reject) => { const image = new Image(); const url = URL.createObjectURL(file); image.onload = () => { URL.revokeObjectURL(url); resolve(image); }; image.onerror = () => { URL.revokeObjectURL(url); reject(new Error(`Nepodařilo se načíst obrázek ${file.name}.`)); }; image.src = url; }); }
-export async function compressImage(file: File): Promise<PreparedImage> { const image = await loadImage(file); const ratio = Math.min(MAX_WIDTH / image.width, MAX_HEIGHT / image.height, 1); const width = Math.round(image.width * ratio); const height = Math.round(image.height * ratio); const canvas = document.createElement("canvas"); canvas.width = width; canvas.height = height; const ctx = canvas.getContext("2d"); if (!ctx) throw new Error("Canvas není dostupný."); ctx.drawImage(image, 0, 0, width, height); let quality = 0.88; let base64 = canvas.toDataURL("image/jpeg", quality); let sizeBytes = dataUrlSizeBytes(base64); while (sizeBytes > TARGET_IMAGE_BYTES && quality > 0.42) { quality -= 0.06; base64 = canvas.toDataURL("image/jpeg", quality); sizeBytes = dataUrlSizeBytes(base64); } return { id: crypto.randomUUID(), name: file.name.replace(/\.[^.]+$/, ".jpg"), mimeType: "image/jpeg", sizeBytes, base64 }; }
+
+function dataUrlSizeBytes(dataUrl: string) {
+  const base64 = dataUrl.split(",")[1] || "";
+  return Math.round((base64.length * 3) / 4);
+}
+
+function loadImage(file: File): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    const url = URL.createObjectURL(file);
+
+    image.onload = () => {
+      URL.revokeObjectURL(url);
+      resolve(image);
+    };
+
+    image.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error(`Nepodařilo se načíst obrázek ${file.name}.`));
+    };
+
+    image.src = url;
+  });
+}
+
+export async function compressImage(file: File): Promise<PreparedImage> {
+  const image = await loadImage(file);
+  const ratio = Math.min(MAX_WIDTH / image.width, MAX_HEIGHT / image.height, 1);
+  const width = Math.round(image.width * ratio);
+  const height = Math.round(image.height * ratio);
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Canvas není dostupný.");
+
+  ctx.drawImage(image, 0, 0, width, height);
+
+  let quality = 0.88;
+  let base64 = canvas.toDataURL("image/jpeg", quality);
+  let sizeBytes = dataUrlSizeBytes(base64);
+
+  while (sizeBytes > TARGET_IMAGE_BYTES && quality > 0.42) {
+    quality -= 0.06;
+    base64 = canvas.toDataURL("image/jpeg", quality);
+    sizeBytes = dataUrlSizeBytes(base64);
+  }
+
+  return {
+    id: crypto.randomUUID(),
+    name: file.name.replace(/\.[^.]+$/, ".jpg"),
+    mimeType: "image/jpeg",
+    sizeBytes,
+    base64,
+  };
+}
+
+export async function compressImagesWithProgress(
+  files: File[],
+  onProgress: (progress: number) => void
+): Promise<PreparedImage[]> {
+  const result: PreparedImage[] = [];
+
+  if (!files.length) {
+    onProgress(100);
+    return result;
+  }
+
+  for (let index = 0; index < files.length; index += 1) {
+    const image = await compressImage(files[index]);
+    result.push(image);
+    onProgress(Math.round(((index + 1) / files.length) * 100));
+  }
+
+  return result;
+}

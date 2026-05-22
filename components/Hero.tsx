@@ -1,15 +1,17 @@
 import Image from "next/image";
 import type { Dictionary, Lang } from "@/lib/i18n";
-import type { ContactContent } from "@/types/site";
+import type { ContactContent, SiteImage } from "@/types/site";
 
 export function Hero({
   t,
   contact,
   lang,
+  heroImage,
 }: {
   t: Dictionary;
   contact: ContactContent;
   lang: Lang;
+  heroImage?: SiteImage | null;
 }) {
   return (
     <section className="hero" id="top">
@@ -44,13 +46,17 @@ export function Hero({
         </div>
 
         <div className="hero-card">
-          <Image
-            src="/img/banner.svg"
-            alt="JazzLight banner"
-            width={1200}
-            height={900}
-            priority
-          />
+          {heroImage?.base64 ? (
+            <img src={heroImage.base64} alt="JazzLight" />
+          ) : (
+            <Image
+              src="/img/banner.svg"
+              alt="JazzLight banner"
+              width={1200}
+              height={900}
+              priority
+            />
+          )}
         </div>
       </div>
     </section>
