@@ -5,6 +5,8 @@ import { signInWithPopup, signOut } from "firebase/auth";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { getFirebaseAuth, getGoogleProvider } from "@/lib/firebaseClient";
 
+const SHOW_LEGACY_ADMIN_TOKEN_LOGIN = false;
+
 export function AdminApp() {
   const [authenticated, setAuthenticated] = useState<boolean | null>(null);
   const [adminEmail, setAdminEmail] = useState<string | null>(null);
@@ -104,25 +106,34 @@ export function AdminApp() {
         <div className="container admin-login-wrap">
           <section className="admin-card">
             <h1 className="section-heading">Přihlášení do administrace</h1>
-            <p className="section-text">
-              Přihlaste se Google účtem povoleným v ADMIN_EMAILS.
-            </p>
+            <p className="section-text">Přihlaste se povoleným Google účtem.</p>
 
             <div className="admin-login-actions">
               <button className="button button-primary" type="button" onClick={loginWithGoogle}>
                 Přihlásit přes Google
               </button>
 
-              <button className="button button-secondary" type="button" onClick={() => setShowLegacyLogin((value) => !value)}>
-                Nouzové heslo
-              </button>
+              {SHOW_LEGACY_ADMIN_TOKEN_LOGIN ? (
+                <button
+                  className="button button-secondary"
+                  type="button"
+                  onClick={() => setShowLegacyLogin((value) => !value)}
+                >
+                  Nouzové heslo
+                </button>
+              ) : null}
             </div>
 
-            {showLegacyLogin ? (
+            {SHOW_LEGACY_ADMIN_TOKEN_LOGIN && showLegacyLogin ? (
               <form className="admin-form" onSubmit={loginWithLegacyToken}>
                 <label className="wide">
                   Nouzové heslo ADMIN_TOKEN
-                  <input type="password" value={legacyToken} onChange={(event) => setLegacyToken(event.target.value)} required />
+                  <input
+                    type="password"
+                    value={legacyToken}
+                    onChange={(event) => setLegacyToken(event.target.value)}
+                    required
+                  />
                 </label>
                 <button className="button button-primary wide" type="submit">
                   Přihlásit nouzovým heslem
