@@ -27,7 +27,7 @@ function buildConcertInput(body: any) {
 }
 
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
-  if (!isAdminRequest(request)) return NextResponse.json({ error: "Nepřihlášený administrátor." }, { status: 401 });
+  if (!(await isAdminRequest(request))) return NextResponse.json({ error: "Nepřihlášený administrátor." }, { status: 401 });
   try {
     const body = await request.json();
     const concert = await updateConcert(params.id, buildConcertInput(body));

@@ -10,7 +10,7 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  if (!isAdminRequest(request)) return NextResponse.json({ error: "Nepřihlášený administrátor." }, { status: 401 });
+  if (!(await isAdminRequest(request))) return NextResponse.json({ error: "Nepřihlášený administrátor." }, { status: 401 });
   try {
     const body = await request.json();
     const content = await saveSiteContent(body);

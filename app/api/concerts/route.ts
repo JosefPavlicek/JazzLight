@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  if (!isAdminRequest(request)) return NextResponse.json({ error: "Nepřihlášený administrátor." }, { status: 401 });
+  if (!(await isAdminRequest(request))) return NextResponse.json({ error: "Nepřihlášený administrátor." }, { status: 401 });
   try {
     const body = await request.json();
     const concert = await createConcert(buildConcertInput(body));

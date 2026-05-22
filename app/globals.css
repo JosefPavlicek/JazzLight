@@ -754,3 +754,10 @@ img {
   line-height: 1;
   filter: saturate(1.05);
 }
+.admin-login-actions {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  margin-top: 1.2rem;
+  margin-bottom: 1rem;
+}
