@@ -1,12 +1,8 @@
 import type { Dictionary, Lang } from "@/lib/i18n";
 
-type HeaderProps = {
-  lang: Lang;
-  t: Dictionary;
-  onToggleLang: () => void;
-};
+const INSTAGRAM_URL = "https://www.instagram.com/";
 
-export function Header({ lang, t, onToggleLang }: HeaderProps) {
+export function Header({ lang, t, onToggleLang }: { lang: Lang; t: Dictionary; onToggleLang: () => void }) {
   return (
     <header className="site-header">
       <div className="container header-inner">
@@ -23,9 +19,25 @@ export function Header({ lang, t, onToggleLang }: HeaderProps) {
           <a href="#contact">{t.navContact}</a>
         </nav>
 
-        <button className="lang-badge lang-button" type="button" onClick={onToggleLang}>
-          {t.langSwitchLabel}
-        </button>
+        <div className="header-actions">
+          <a className="instagram-link" href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label={t.instagramLabel} title={t.instagramLabel}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="5" />
+              <circle cx="12" cy="12" r="4" />
+              <circle cx="17.5" cy="6.5" r="1" />
+            </svg>
+          </a>
+          <button
+            className="lang-badge lang-button lang-button-with-flag"
+            type="button"
+            onClick={onToggleLang}
+            title={t.langSwitchTooltip}
+            aria-label={t.langSwitchTooltip}
+          >
+            <span className="lang-flag" aria-hidden="true">{t.langSwitchFlag}</span>
+            <span>{t.langSwitchLabel}</span>
+          </button>
+        </div>
       </div>
     </header>
   );

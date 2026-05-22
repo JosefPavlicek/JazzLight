@@ -711,3 +711,46 @@ img {
   font-size: 1.35rem;
   line-height: 1;
 }
+
+/* Hero zoom + Instagram + footer links */
+.header-actions{display:flex;align-items:center;gap:.7rem}
+.instagram-link{width:52px;height:52px;display:inline-grid;place-items:center;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--accent-dark);box-shadow:var(--shadow);text-decoration:none}
+.instagram-link svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8}
+.instagram-link:hover,.lang-button:hover{transform:translateY(-1px)}
+.hero-image-button{display:block;width:100%;padding:0;border:0;background:transparent;cursor:zoom-in}
+.hero-image-button img{width:100%}
+.footer-inner-rich{gap:.9rem}
+.footer-links{display:flex;flex-direction:column;gap:.35rem}
+.footer-links a{color:var(--accent-dark);text-decoration:none;font-weight:700}
+.footer-links a:hover{text-decoration:underline}
+@media(min-width:760px){.footer-links{align-items:flex-end}}
+@media(max-width:759px){.header-inner{align-items:flex-start}.header-actions{margin-left:auto}.instagram-link{width:48px;height:48px}}
+
+/* Instagram brand-style gradient */
+.instagram-link {
+  background:
+    radial-gradient(circle at 30% 110%, #fdf497 0%, #fdf497 18%, #fd5949 43%, #d6249f 68%, #285AEB 100%);
+  color: white;
+  border: 0;
+}
+
+.instagram-link svg {
+  stroke: white;
+}
+
+.instagram-link:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px) scale(1.03);
+}
+/* Language switch flags */
+.lang-button-with-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.lang-flag {
+  font-size: 1.2rem;
+  line-height: 1;
+  filter: saturate(1.05);
+}
