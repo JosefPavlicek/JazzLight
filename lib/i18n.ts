@@ -1,6 +1,46 @@
 export type Lang = "cs" | "en";
 
-export const dictionary = {
+export type Dictionary = {
+  navAbout: string;
+  navMembers: string;
+  navRepertoire: string;
+  navConcerts: string;
+  navContact: string;
+
+  brandSubtitle: string;
+  heroEyebrow: string;
+  heroTitle: string;
+  heroText: string;
+  heroConcerts: string;
+  heroContact: string;
+
+  aboutTitle: string;
+  aboutText: string;
+
+  membersTitle: string;
+  membersText: string;
+  josefRole: string;
+  singerName: string;
+  singerRole: string;
+
+  repertoireTitle: string;
+
+  concertsTitle: string;
+  concertsText: string;
+  upcomingConcerts: string;
+  pastConcerts: string;
+  noUpcomingConcerts: string;
+  noPastConcerts: string;
+  concertDetail: string;
+
+  contactTitle: string;
+  contactText: string;
+
+  footerText: string;
+  langSwitchLabel: string;
+};
+
+export const dictionary: Record<Lang, Dictionary> = {
   cs: {
     navAbout: "O kapele",
     navMembers: "Členové",
@@ -80,6 +120,4 @@ export const dictionary = {
     footerText: "Next.js + Firebase Realtime Database prototype.",
     langSwitchLabel: "CZ"
   }
-} as const;
-
-export type Dictionary = typeof dictionary.cs;
+};
