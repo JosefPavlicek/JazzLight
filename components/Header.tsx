@@ -1,4 +1,5 @@
 import type { Dictionary, Lang } from "@/lib/i18n";
+import Image from "next/image";
 
 const INSTAGRAM_URL = "https://www.instagram.com/";
 
@@ -7,7 +8,14 @@ export function Header({ lang, t, onToggleLang }: { lang: Lang; t: Dictionary; o
     <header className="site-header">
       <div className="container header-inner">
         <a href="#top" className="brand">
-          <span className="brand-title">JazzLight</span>
+          <Image
+            src="/img/logo-jazzlight.png"
+            alt="JazzLight"
+            width={400}
+            height={450}
+            priority
+            className="brand-logo"
+          />
           <span className="brand-subtitle">{t.brandSubtitle}</span>
         </a>
 
