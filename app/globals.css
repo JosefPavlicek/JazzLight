@@ -76,19 +76,21 @@ img {
 
 .brand-subtitle {
     display: block;
-    font-size: .9rem;
+    font-size: 1.2rem;
     color: var(--muted)
 }
 
 .nav-links {
     display: none;
-    gap: 1.4rem
+    gap: 1.0rem
 }
 
 .nav-links a {
     text-decoration: none;
-    font-weight: 600;
-    color: var(--muted)
+    font-weight: 700;
+    font-size: 1.4rem;
+    letter-spacing: 0.01em;
+    color: var(--muted);
 }
 
 .lang-badge {
@@ -760,4 +762,9 @@ img {
   flex-wrap: wrap;
   margin-top: 1.2rem;
   margin-bottom: 1rem;
+}
+.brand-logo {
+  width: 320px;
+  height: auto;
+  display: block;
 }
