@@ -5,6 +5,21 @@ import type { SiteContent } from "@/types/site";
 import { ContentManager } from "@/components/admin/ContentManager";
 import { ConcertManager } from "@/components/admin/ConcertManager";
 
+async function safeReadResponse(response: Response) {
+  const text = await response.text();
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return {
+      error:
+        response.status === 413
+          ? "Data jsou příliš velká pro Vercel request. Odeber některé fotky nebo je ulož v menším rozlišení."
+          : text || `Server vrátil chybu ${response.status}.`,
+    };
+  }
+}
+
 export function AdminDashboard({
   onLogout,
   adminEmail,
@@ -17,7 +32,7 @@ export function AdminDashboard({
 
   async function loadContent() {
     const response = await fetch("/api/content", { cache: "no-store" });
-    const result = await response.json();
+    const result = await safeReadResponse(response);
 
     if (!response.ok) {
       setStatus(result.error || "Obsah se nepodařilo načíst.");
@@ -41,7 +56,7 @@ export function AdminDashboard({
       body: JSON.stringify(nextContent),
     });
 
-    const result = await response.json();
+    const result = await safeReadResponse(response);
 
     if (!response.ok) {
       setStatus(result.error || "Obsah se nepodařilo uložit.");

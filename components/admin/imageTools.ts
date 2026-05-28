@@ -6,9 +6,17 @@ export type PreparedImage = {
   base64: string;
 };
 
-const TARGET_IMAGE_BYTES = 550_000;
-const MAX_WIDTH = 1400;
-const MAX_HEIGHT = 1400;
+export type CompressOptions = {
+  targetBytes?: number;
+  maxWidth?: number;
+  maxHeight?: number;
+  initialQuality?: number;
+  minQuality?: number;
+};
+
+const DEFAULT_TARGET_IMAGE_BYTES = 220_000;
+const DEFAULT_MAX_WIDTH = 1000;
+const DEFAULT_MAX_HEIGHT = 1000;
 
 function dataUrlSizeBytes(dataUrl: string) {
   const base64 = dataUrl.split(",")[1] || "";
@@ -34,12 +42,7 @@ function loadImage(file: File): Promise<HTMLImageElement> {
   });
 }
 
-export async function compressImage(file: File): Promise<PreparedImage> {
-  const image = await loadImage(file);
-  const ratio = Math.min(MAX_WIDTH / image.width, MAX_HEIGHT / image.height, 1);
-  const width = Math.round(image.width * ratio);
-  const height = Math.round(image.height * ratio);
-
+function renderJpeg(image: HTMLImageElement, width: number, height: number, quality: number) {
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
@@ -48,14 +51,36 @@ export async function compressImage(file: File): Promise<PreparedImage> {
   if (!ctx) throw new Error("Canvas není dostupný.");
 
   ctx.drawImage(image, 0, 0, width, height);
+  return canvas.toDataURL("image/jpeg", quality);
+}
 
-  let quality = 0.88;
-  let base64 = canvas.toDataURL("image/jpeg", quality);
+export async function compressImage(file: File, options: CompressOptions = {}): Promise<PreparedImage> {
+  const image = await loadImage(file);
+
+  const targetBytes = options.targetBytes ?? DEFAULT_TARGET_IMAGE_BYTES;
+  const maxWidth = options.maxWidth ?? DEFAULT_MAX_WIDTH;
+  const maxHeight = options.maxHeight ?? DEFAULT_MAX_HEIGHT;
+  const initialQuality = options.initialQuality ?? 0.78;
+  const minQuality = options.minQuality ?? 0.34;
+
+  let ratio = Math.min(maxWidth / image.width, maxHeight / image.height, 1);
+  let width = Math.max(1, Math.round(image.width * ratio));
+  let height = Math.max(1, Math.round(image.height * ratio));
+
+  let quality = initialQuality;
+  let base64 = renderJpeg(image, width, height, quality);
   let sizeBytes = dataUrlSizeBytes(base64);
 
-  while (sizeBytes > TARGET_IMAGE_BYTES && quality > 0.42) {
-    quality -= 0.06;
-    base64 = canvas.toDataURL("image/jpeg", quality);
+  while (sizeBytes > targetBytes && quality > minQuality) {
+    quality = Math.max(minQuality, quality - 0.06);
+    base64 = renderJpeg(image, width, height, quality);
+    sizeBytes = dataUrlSizeBytes(base64);
+  }
+
+  while (sizeBytes > targetBytes && width > 420 && height > 420) {
+    width = Math.round(width * 0.86);
+    height = Math.round(height * 0.86);
+    base64 = renderJpeg(image, width, height, quality);
     sizeBytes = dataUrlSizeBytes(base64);
   }
 
@@ -70,7 +95,8 @@ export async function compressImage(file: File): Promise<PreparedImage> {
 
 export async function compressImagesWithProgress(
   files: File[],
-  onProgress: (progress: number) => void
+  onProgress: (progress: number) => void,
+  options: CompressOptions = {}
 ): Promise<PreparedImage[]> {
   const result: PreparedImage[] = [];
 
@@ -80,7 +106,7 @@ export async function compressImagesWithProgress(
   }
 
   for (let index = 0; index < files.length; index += 1) {
-    const image = await compressImage(files[index]);
+    const image = await compressImage(files[index], options);
     result.push(image);
     onProgress(Math.round(((index + 1) / files.length) * 100));
   }
